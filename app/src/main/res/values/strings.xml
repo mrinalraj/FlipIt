@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">FlipIt</string>
+    <string name="instructions">Uncover two matching cards at once\nto eliminate them from the game.\nBeware of the timer, the less the time you take the more you score\nbut make sure to finish before timer runs out.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
