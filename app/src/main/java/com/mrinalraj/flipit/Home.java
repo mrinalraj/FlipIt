@@ -20,11 +20,22 @@ public class Home extends AppCompatActivity implements Start.OnFragmentInteracti
         transaction.commit();
     }
 
+    int counter =0;
+
     @Override
     public void onBackPressed() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.layoutFragment);
 
+        counter++;
+
         if (currentFragment instanceof EasyLevel){
+
+            if (counter < 2){
+
+            }
+            else if (counter >= 2){
+                onBackPressed();
+            }
 
         }
         else if (currentFragment instanceof HardLevel){

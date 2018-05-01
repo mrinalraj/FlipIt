@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -88,6 +87,8 @@ public class EasyLevel extends Fragment {
         final FragmentTransaction transaction = getFragmentManager().beginTransaction();
         final Result r= new Result();
 
+        EasyLevelRecyclerView.setAdapter(new EasyLevelAdapter(cards));
+
         new CountDownTimer(55000,1000){
             @Override
             public void onTick(long millisUntilFinished) {
@@ -115,8 +116,6 @@ public class EasyLevel extends Fragment {
                 transaction.commit();
             }
         }.start();
-
-        EasyLevelRecyclerView.setAdapter(new EasyLevelAdapter(cards));
 
         EasyLevelRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
 
