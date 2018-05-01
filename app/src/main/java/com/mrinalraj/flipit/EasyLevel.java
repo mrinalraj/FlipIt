@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mrinalraj.flipit.Adapters.EasyLevelAdapter;
@@ -46,7 +47,6 @@ public class EasyLevel extends Fragment {
     EasyFlipView flippedCard;
     int pos, count;
     Bundle b;
-    public ProgressBar pbar;
 
 
     public EasyLevel() {
@@ -73,7 +73,6 @@ public class EasyLevel extends Fragment {
 
         EasyLevelRecyclerView = rootView.findViewById(R.id.easylevelview);
         b=new Bundle();
-        pbar = rootView.findViewById(R.id.progressBarEasy);
 
         RecyclerView.LayoutManager lm = new GridLayoutManager(getContext(),3, LinearLayoutManager.VERTICAL,false);
         EasyLevelRecyclerView.setLayoutManager(lm);
@@ -92,8 +91,7 @@ public class EasyLevel extends Fragment {
         new CountDownTimer(55000,1000){
             @Override
             public void onTick(long millisUntilFinished) {
-                //((TextView) rootView.findViewById(R.id.easylevelcounter)).setText("Time : "+millisUntilFinished/1000);
-                pbar.setProgress((int) (millisUntilFinished/1000)*100/(55000/1000));
+                ((TextView) rootView.findViewById(R.id.easylevelcounter)).setText("Time : "+millisUntilFinished/1000);
                 if (count == 12){
                     this.cancel();
                     this.onFinish();
