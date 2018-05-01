@@ -1,14 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Result">
-
-    <!-- TODO: Update blank fragment layout -->
+    <nl.dionsegijn.konfetti.KonfettiView
+        android:id="@+id/viewKonfetti"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="wrap_content"
+        android:id="@+id/time"
+        android:text="Time"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="24dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="50dp"
+        android:textAlignment="center"
+        />
 
-</FrameLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/time"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:layout_marginTop="50dp"
+        android:id="@+id/tile-line1result">
+
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:background="@color/yellow"
+            android:layout_margin="2dp"
+            android:id="@+id/r1"
+            android:fontFamily="sans-serif-regular"
+            android:textColor="@color/white"
+            android:textSize="100dp"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:background="@color/pink"
+            android:layout_margin="2dp"
+            android:id="@+id/r2"
+            android:fontFamily="sans-serif-regular"
+            android:textColor="@color/white"
+            android:textSize="100dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tile-line1result"
+        android:layout_centerInParent="true"
+        android:orientation="horizontal"
+        android:id="@+id/tile-line2result">
+
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:background="@color/yellow"
+            android:layout_margin="2dp"
+            android:id="@+id/r3"
+            android:fontFamily="sans-serif-regular"
+            android:textColor="@color/white"
+            android:textSize="100dp"
+            android:textAlignment="center"/>
+        <TextView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:background="@color/yellow"
+            android:layout_margin="2dp"
+            android:id="@+id/r4"
+            android:fontFamily="sans-serif-regular"
+            android:textColor="@color/white"
+            android:textSize="100dp"
+            android:textAlignment="center"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/desc1"
+        android:text="Time"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="30dp"
+        android:layout_marginTop="30dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/tile-line2result"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/desc2"
+        android:text="Time"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="18dp"
+        android:textAlignment="center"
+        android:layout_below="@+id/desc1"
+        />
+
+
+</RelativeLayout>

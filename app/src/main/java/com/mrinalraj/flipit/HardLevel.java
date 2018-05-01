@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import com.mrinalraj.flipit.Adapters.EasyLevelAdapter;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 
 public class HardLevel extends Fragment {
@@ -21,9 +22,39 @@ public class HardLevel extends Fragment {
     private OnFragmentInteractionListener mListener;
     private RecyclerView HardLevelRecyclerView;
     public ArrayList<Integer> cards;
+    public int CARDS[] = {
+            R.drawable.card1,
+            R.drawable.card2,
+            R.drawable.card3,
+            R.drawable.card4,
+            R.drawable.card5,
+            R.drawable.card6,
+            R.drawable.card7,
+            R.drawable.card8,
+            R.drawable.card1,
+            R.drawable.card2,
+            R.drawable.card3,
+            R.drawable.card4,
+            R.drawable.card5,
+            R.drawable.card6,
+            R.drawable.card7,
+            R.drawable.card8
+    };
 
     public HardLevel() {
         // Required empty public constructor
+    }
+
+    public void shuffle(int cards[], int n){
+        Random random = new Random();
+
+        for (int i=0;i<n;i++){
+            int r = random.nextInt(n-i);
+
+            int temp = cards[r];
+            cards[r] = cards[i];
+            cards[i] = temp;
+        }
     }
 
 
@@ -40,23 +71,11 @@ public class HardLevel extends Fragment {
         cards = new ArrayList<>();
 
         //card shuffle here
-        cards.add(R.drawable.card2);
-        cards.add(R.drawable.card3);
-        cards.add(R.drawable.card2);
-        cards.add(R.drawable.card4);
-        cards.add(R.drawable.card4);
-        cards.add(R.drawable.card3);
-        cards.add(R.drawable.card2);
-        cards.add(R.drawable.card3);
-        cards.add(R.drawable.card2);
-        cards.add(R.drawable.card4);
-        cards.add(R.drawable.card4);
-        cards.add(R.drawable.card3);
-        cards.add(R.drawable.card1);
-        cards.add(R.drawable.card6);
-        cards.add(R.drawable.card8);
-        cards.add(R.drawable.card6);
-
+        shuffle(CARDS,16);
+        shuffle(CARDS,16);
+        for (int card : CARDS){
+            cards.add(card);
+        }
         HardLevelRecyclerView.setAdapter(new EasyLevelAdapter(cards));
 
         return view;
