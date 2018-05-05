@@ -6,13 +6,13 @@
     tools:context=".EasyLevel"
     android:padding="20dp">
 
-
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Best time : 0:09"
+        android:text="Best time : 0:"
         android:fontFamily="sans-serif-light"
         android:textColor="#000"
+        android:id="@+id/bestEasy"
         android:layout_alignParentStart="true"
         android:textSize="18dp"/>
 

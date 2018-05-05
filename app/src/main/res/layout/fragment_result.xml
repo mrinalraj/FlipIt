@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/time"
-        android:text="Time"
         android:fontFamily="sans-serif-thin"
         android:textSize="24dp"
         android:layout_marginTop="40dp"
@@ -84,7 +83,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/desc1"
-        android:text="Time"
         android:fontFamily="sans-serif-thin"
         android:textSize="30dp"
         android:layout_marginTop="30dp"
@@ -95,12 +93,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/desc2"
-        android:text="Time"
         android:fontFamily="sans-serif-thin"
         android:textSize="18dp"
         android:textAlignment="center"
         android:layout_below="@+id/desc1"
         />
+
+    <TextView
+        android:id="@+id/newhigh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="116dp" />
 
 
 </RelativeLayout>

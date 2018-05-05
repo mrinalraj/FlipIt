@@ -1,7 +1,8 @@
 package com.mrinalraj.flipit;
 
-import android.content.Context;
-import android.net.Uri;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -10,12 +11,12 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.mrinalraj.flipit.Adapters.EasyLevelAdapter;
 import com.wajahatkarim3.easyflipview.EasyFlipView;
@@ -26,7 +27,6 @@ import java.util.Random;
 
 public class EasyLevel extends Fragment {
 
-    private OnFragmentInteractionListener mListener;
     private RecyclerView EasyLevelRecyclerView;
     public ArrayList<Integer> cards;
     public int CARDS[] = {
@@ -44,8 +44,11 @@ public class EasyLevel extends Fragment {
                 R.drawable.card6
     };
     EasyFlipView flippedCard;
-    int pos, count;
+    public long RemainingTime;
+    public boolean isPaused, isCancelled;
     Bundle b;
+    private SharedPreferences pref;
+    int pos, count, bestScore;
 
 
     public EasyLevel() {
@@ -64,6 +67,14 @@ public class EasyLevel extends Fragment {
         }
     }
 
+    public void fragmentTransaction(Bundle b){
+        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        final Result r= new Result();
+        r.setArguments(b);
+        transaction.replace(R.id.layoutFragment, r);
+        transaction.commit();
+    };
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -72,50 +83,118 @@ public class EasyLevel extends Fragment {
 
         EasyLevelRecyclerView = rootView.findViewById(R.id.easylevelview);
         b=new Bundle();
+        b.putInt("level",Constants.LEVEL_EASY);
+        pref = getActivity().getSharedPreferences(Constants.PREF_NAME,0);
+        bestScore = pref.getInt(Constants.EASY_HIGH_KEY, (int) (Constants.EASY_TIME/Constants.TIMER_INTERVAL));
+
+        ((TextView) rootView.findViewById(R.id.bestEasy)).append(bestScore+"");
 
         RecyclerView.LayoutManager lm = new GridLayoutManager(getContext(),3, LinearLayoutManager.VERTICAL,false);
         EasyLevelRecyclerView.setLayoutManager(lm);
 
         cards = new ArrayList<>();
         // TODO: card shuffle here
-        shuffle(CARDS,12);
-        //shuffle(CARDS,12);
+
+        shuffle(CARDS,Constants.EASY_NO_OF_CARDS);
+        shuffle(CARDS,Constants.EASY_NO_OF_CARDS);   // double shuffle
         for (int card : CARDS){
             cards.add(card);
         }
 
-        final FragmentTransaction transaction = getFragmentManager().beginTransaction();
-        final Result r= new Result();
-
         EasyLevelRecyclerView.setAdapter(new EasyLevelAdapter(cards));
 
-        new CountDownTimer(55000,1000){
+        isPaused = false;
+        isCancelled = false;
+
+         new CountDownTimer(Constants.EASY_TIME,Constants.TIMER_INTERVAL){
             @Override
             public void onTick(long millisUntilFinished) {
-                ((TextView) rootView.findViewById(R.id.easylevelcounter)).setText("Time : "+millisUntilFinished/1000);
-                if (count == 12){
-                    this.cancel();
-                    this.onFinish();
-                    b.putString("Data","win");
-                    long time = 55 - (millisUntilFinished/1000);
-                    b.putInt("Time", (int) time);
+                if (isPaused || isCancelled){
+                    cancel();
+                }
+                else {
+                    ((TextView) rootView.findViewById(R.id.easylevelcounter)).setText("Time : " + millisUntilFinished / Constants.TIMER_INTERVAL);
+                    RemainingTime = millisUntilFinished;
+                    if (count == Constants.EASY_NO_OF_CARDS) {
+                        b.putString("Data", "win");
+                        long time = (Constants.EASY_TIME - millisUntilFinished)/ Constants.TIMER_INTERVAL;
+                        b.putInt("Time", (int) time);
+                        cancel();
+                        this.onFinish();
+                    }
                 }
             }
 
             @Override
             public void onFinish() {
-                Toast.makeText(getContext(), "cards eliminated : "+count, Toast.LENGTH_SHORT).show();
-
-                if (count < 12){
-                    b.putString("Data","lost");
-                    b.putInt("Time", 55);
+                if (count < Constants.EASY_NO_OF_CARDS) {
+                    b.putString("Data", "lost");
+                    b.putInt("Time", (int) (Constants.EASY_TIME/Constants.TIMER_INTERVAL));
                 }
-
-                r.setArguments(b);
-                transaction.replace(R.id.layoutFragment,r);
-                transaction.commit();
+                fragmentTransaction(b);
             }
         }.start();
+
+
+        rootView.setFocusableInTouchMode(true);
+        rootView.requestFocus();
+        rootView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+                    isPaused = true;
+                    AlertDialog.Builder pause = new AlertDialog.Builder(getContext());
+                    pause.setTitle("Game paused");
+                    pause.setMessage("Do you want to quit ?");
+                    pause.setCancelable(false);
+                    pause.setPositiveButton("Resume", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            isPaused = false;
+                            new CountDownTimer(RemainingTime,Constants.TIMER_INTERVAL){
+                                int time;
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    if (isPaused || isCancelled){
+                                        cancel();
+                                    }
+                                    else {
+                                        ((TextView) rootView.findViewById(R.id.easylevelcounter)).setText("Time : " + millisUntilFinished / Constants.TIMER_INTERVAL);
+                                        RemainingTime = millisUntilFinished;
+                                        if (count == Constants.EASY_NO_OF_CARDS) {
+                                            b.putString("Data", "win");
+                                            time = (int) ((Constants.EASY_TIME - millisUntilFinished)/ Constants.TIMER_INTERVAL);
+                                            b.putInt("Time", time);
+                                            cancel();
+                                            this.onFinish();
+                                        }
+                                    }
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    if (count < Constants.EASY_NO_OF_CARDS) {
+                                        b.putString("Data", "lost");
+                                        b.putInt("Time", (int) (Constants.EASY_TIME/Constants.TIMER_INTERVAL));
+                                    }
+                                    fragmentTransaction(b);
+                                }
+                            }.start();
+                        }
+                    });
+                    pause.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            isCancelled = true;
+                            getFragmentManager().popBackStack();
+                        }
+                    });
+                    pause.show();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         EasyLevelRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
 
@@ -132,29 +211,46 @@ public class EasyLevel extends Fragment {
                     }
 
                     else{
-
                         if (pos == position){
                             flippedCard=null;
                         }
                         else{
                             if (cards.get(pos).equals(cards.get(position))){
-                                new Handler().postDelayed(new Runnable() {
+                                ((EasyFlipView) child).setOnFlipListener(new EasyFlipView.OnFlipAnimationListener() {
                                     @Override
-                                    public void run() {
-                                        flippedCard.setVisibility(View.GONE);
-                                        child.setVisibility(View.GONE);
-                                        child.setEnabled(false);
-                                        flippedCard.setEnabled(false);
-                                        flippedCard=null;
-                                        count+=2;
+                                    public void onViewFlipCompleted(EasyFlipView easyFlipView, EasyFlipView.FlipState newCurrentSide) {
+                                        for (int i = 0; i < EasyLevelRecyclerView.getChildCount(); i++) {
+                                            EasyFlipView child1 = (EasyFlipView) EasyLevelRecyclerView.getChildAt(i);
+                                            child1.setEnabled(false);
+                                        }
+                                        new Handler().postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                flippedCard.setVisibility(View.GONE);
+                                                child.setVisibility(View.GONE);
+                                                child.setEnabled(false);
+                                                flippedCard.setEnabled(false);
+                                                flippedCard=null;
+                                                count+=2;
 
+                                                for (int i = 0; i < EasyLevelRecyclerView.getChildCount(); i++) {
+                                                    EasyFlipView child1 = (EasyFlipView) EasyLevelRecyclerView.getChildAt(i);
+                                                    child1.setEnabled(true);
+                                                }
+                                                ((EasyFlipView) child).setOnFlipListener(null);
+                                            }
+                                        },200);
                                     }
-                                },400);
+                                });
                             }
                             else {
                                 ((EasyFlipView) child).setOnFlipListener(new EasyFlipView.OnFlipAnimationListener() {
                                     @Override
                                     public void onViewFlipCompleted(EasyFlipView easyFlipView, EasyFlipView.FlipState newCurrentSide) {
+                                        for (int i = 0; i < EasyLevelRecyclerView.getChildCount(); i++) {
+                                            EasyFlipView child1 = (EasyFlipView) EasyLevelRecyclerView.getChildAt(i);
+                                            child1.setEnabled(false);
+                                        }
                                         new Handler().postDelayed(new Runnable() {
                                             @Override
                                             public void run() {
@@ -162,6 +258,11 @@ public class EasyLevel extends Fragment {
                                                 ((EasyFlipView) child).flipTheView();
                                                 flippedCard = null;
                                                 ((EasyFlipView) child).setOnFlipListener(null);
+
+                                                for (int i = 0; i < EasyLevelRecyclerView.getChildCount(); i++) {
+                                                    EasyFlipView child1 = (EasyFlipView) EasyLevelRecyclerView.getChildAt(i);
+                                                    child1.setEnabled(true);
+                                                }
                                             }
                                         }, 100);
                                     }
@@ -173,47 +274,12 @@ public class EasyLevel extends Fragment {
                 }
                 return false;
             }
-
             @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {}
             @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {}
         });
         return rootView;
     }
 
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-
-    public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
-    }
 }

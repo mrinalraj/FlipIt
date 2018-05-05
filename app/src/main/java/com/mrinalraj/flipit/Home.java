@@ -1,7 +1,6 @@
 package com.mrinalraj.flipit;
 
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -9,7 +8,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
-public class Home extends AppCompatActivity implements Start.OnFragmentInteractionListener, EasyLevel.OnFragmentInteractionListener, HardLevel.OnFragmentInteractionListener, Result.OnFragmentInteractionListener{
+public class Home extends AppCompatActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,40 +19,38 @@ public class Home extends AppCompatActivity implements Start.OnFragmentInteracti
         transaction.commit();
     }
 
-    int counter =0;
+    int counter = 0;
 
     @Override
     public void onBackPressed() {
         Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.layoutFragment);
 
         counter++;
+        if (currentFragment instanceof Start){
+            AlertDialog.Builder exit = new AlertDialog.Builder(this);
+            exit.setTitle("Do you really want to go?");
+            exit.setPositiveButton("Yes, please.", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                }
+            });
+            exit.setNegativeButton("Umm, I can stay.", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Toast.makeText(Home.this, "Welcome back.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
-        if (currentFragment instanceof EasyLevel){
-
-            if (counter < 2){
-
-            }
-            else if (counter >= 2){
-                onBackPressed();
-            }
-
-        }
-        else if (currentFragment instanceof HardLevel){
-
-        }
-        else if (currentFragment instanceof Start){
-            ExitDialog dialog = new ExitDialog(this);
-            dialog.show();
+            exit.show();
         }
         else if(currentFragment instanceof Result){
             getSupportFragmentManager().beginTransaction().remove(currentFragment).commit();
             super.onBackPressed();
         }
-
-    }
-
-    @Override
-    public void onFragmentInteraction(Uri uri) {
+        else{
+            super.onBackPressed();
+        }
 
     }
 }
