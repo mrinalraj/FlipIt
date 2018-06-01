@@ -53,3 +53,21 @@
 ├── README.md
 └── .gitignore
 ```
+
+---
+
+# Card flipping memory game built for android
+
+dependencies used 
+
+```gradle
+'com.wajahatkarim3.EasyFlipView:EasyFlipView:2.0.5'
+'nl.dionsegijn:konfetti:1.1.0'
+
+```
+
+----
+
+## Screenshots
+
+![flip-it wireframe screenshots](https://raw.githubusercontent.com/mrinalraj/FlipIt/blob/master/git-assets/flip-wireframe.png)
