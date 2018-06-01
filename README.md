@@ -70,4 +70,4 @@ dependencies used
 
 ## Screenshots
 
-![flip-it wireframe screenshots](https://raw.githubusercontent.com/mrinalraj/FlipIt/blob/master/git-assets/flip-wireframe.png)
+![flip-it wireframe screenshots](https://raw.githubusercontent.com/mrinalraj/FlipIt/master/git-assets/flip-wireframe.png)
